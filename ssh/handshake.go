@@ -347,9 +347,19 @@ func (t *handshakeTransport) enterKeyExchange(otherInitPacket []byte) error {
 	if err = t.conn.writePacket([]byte{msgNewKeys}); err != nil {
 		return err
 	}
-	if packet, err := t.conn.readPacket(); err != nil {
+
+	packet, err := t.conn.readPacket()
+	if err != nil {
 		return err
-	} else if packet[0] != msgNewKeys {
+	}
+
+	if packet[0] == 2 {
+		if packet, err = t.conn.readPacket(); err != nil {
+			return err
+		}
+	}
+
+	if packet[0] != msgNewKeys {
 		return unexpectedMessageError(msgNewKeys, packet[0])
 	}
 	return nil

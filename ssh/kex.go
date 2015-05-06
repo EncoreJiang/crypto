@@ -103,6 +103,12 @@ func (group *dhGroup) Client(c packetConn, randSource io.Reader, magics *handsha
 		return nil, err
 	}
 
+	if packet[0] == 2 {
+		packet, err = c.readPacket()
+		if err != nil {
+			return nil, err
+		}
+	}
 	var kexDHReply kexDHReplyMsg
 	if err = Unmarshal(packet, &kexDHReply); err != nil {
 		return nil, err
